@@ -31,7 +31,20 @@ function M.toggle()
   -- 2. If the buffer doesn't exist, create it and set up one-time configs
   if not scratchpad_bufnr or not vim.api.nvim_buf_is_valid(scratchpad_bufnr) then
     scratchpad_bufnr = vim.fn.bufadd(M.config.filepath)
-    vim.fn.bufload(scratchpad_bufnr)
+
+    -- Intercept the swapfile warning and automatically choose "Edit anyway" (e)
+    local swap_au_id = vim.api.nvim_create_autocmd("SwapExists", {
+      pattern = M.config.filepath,
+      callback = function()
+        vim.v.swapchoice = 'e'
+      end,
+    })
+
+    -- Safely load the buffer.
+    pcall(vim.fn.bufload, scratchpad_bufnr)
+
+    -- Clean up the temporary swapfile interceptor so it doesn't affect other files
+    pcall(vim.api.nvim_del_autocmd, swap_au_id)
 
     -- Set buffer options
     vim.bo[scratchpad_bufnr].buftype = ''
