@@ -97,11 +97,15 @@ function M.toggle()
   })
 
   -- Improve margins and reading experience
-  vim.wo[scratchpad_winid].signcolumn = 'no'
-  vim.wo[scratchpad_winid].foldcolumn = '1'
-  vim.wo[scratchpad_winid].wrap = true
-  vim.wo[scratchpad_winid].linebreak = true
-  vim.wo[scratchpad_winid].conceallevel = 2
+  vim.opt_local.number = false
+  vim.opt_local.relativenumber = false
+  vim.opt_local.signcolumn = 'yes:2' -- Elegant 2-space left padding
+  vim.opt_local.foldcolumn = '0'
+  vim.opt_local.wrap = true
+  vim.opt_local.linebreak = true
+  vim.opt_local.conceallevel = 2
+  vim.opt_local.colorcolumn = ''     -- Remove any vertical ruler
+  vim.opt_local.fillchars:append({ eob = ' ' }) -- Hide the '~' at the end of the buffer
 end
 
 return M
