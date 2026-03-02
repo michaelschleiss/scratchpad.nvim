@@ -100,7 +100,7 @@ function M.toggle()
   vim.opt_local.number = false
   vim.opt_local.relativenumber = false
   vim.opt_local.signcolumn = 'yes:1' -- 1-space left padding for diagnostics
-  vim.opt_local.winhl = 'SignColumn:Normal' -- Blend sign column color with background
+  vim.opt_local.winhl = 'Normal:NormalFloat,SignColumn:NormalFloat' -- Blend sign column seamlessly into floating window background
   vim.opt_local.foldcolumn = '0'
   vim.opt_local.wrap = true
   vim.opt_local.linebreak = true
