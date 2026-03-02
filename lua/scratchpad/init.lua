@@ -95,6 +95,13 @@ function M.toggle()
     title = ' Scratchpad ',
     title_pos = 'center',
   })
+
+  -- Improve margins and reading experience
+  vim.wo[scratchpad_winid].signcolumn = 'no'
+  vim.wo[scratchpad_winid].foldcolumn = '1'
+  vim.wo[scratchpad_winid].wrap = true
+  vim.wo[scratchpad_winid].linebreak = true
+  vim.wo[scratchpad_winid].conceallevel = 2
 end
 
 return M
