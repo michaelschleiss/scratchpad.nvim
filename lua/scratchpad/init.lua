@@ -100,7 +100,8 @@ function M.toggle()
   vim.opt_local.number = false
   vim.opt_local.relativenumber = false
   vim.opt_local.signcolumn = 'no' -- Completely disable the signcolumn bar
-  vim.opt_local.foldcolumn = '1' -- Use 1 space of foldcolumn for pure text padding without the bar
+  vim.opt_local.foldcolumn = '1' -- Use 1 space of foldcolumn for pure text padding
+  vim.opt_local.winhl = 'FoldColumn:NormalFloat' -- Blend the foldcolumn seamlessly into the background
   vim.opt_local.wrap = true
   vim.opt_local.linebreak = true
   vim.opt_local.conceallevel = 2
