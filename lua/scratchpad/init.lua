@@ -13,11 +13,18 @@ function M.setup(opts)
   M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 end
 
+-- Helper to safely close the window
+local function close_window()
+  if scratchpad_winid and vim.api.nvim_win_is_valid(scratchpad_winid) then
+    vim.api.nvim_win_close(scratchpad_winid, true)
+  end
+  scratchpad_winid = nil
+end
+
 function M.toggle()
   -- 1. If the window is open, close it and return
   if scratchpad_winid and vim.api.nvim_win_is_valid(scratchpad_winid) then
-    vim.api.nvim_win_close(scratchpad_winid, true)
-    scratchpad_winid = nil
+    close_window()
     return
   end
 
@@ -31,11 +38,23 @@ function M.toggle()
     vim.bo[scratchpad_bufnr].bufhidden = 'hide'
     vim.bo[scratchpad_bufnr].filetype = 'markdown'
 
-    -- Auto-save exactly once using the Lua API
+    -- Auto-save exactly once using the Lua API. 
+    -- Changed 'write' to 'update' so it only writes to disk if the buffer was modified.
     vim.api.nvim_create_autocmd("BufLeave", {
       buffer = scratchpad_bufnr,
       callback = function()
-        vim.cmd("silent! write")
+        vim.cmd("silent! update")
+      end,
+    })
+
+    -- Auto-close the floating window if it loses focus (e.g. via <C-w><C-w>)
+    vim.api.nvim_create_autocmd("WinLeave", {
+      buffer = scratchpad_bufnr,
+      callback = function()
+        -- Schedule the close to avoid errors during the WinLeave event
+        vim.schedule(function()
+          close_window()
+        end)
       end,
     })
 
@@ -51,7 +70,7 @@ function M.toggle()
   local row = math.floor((vim.o.lines - height) / 2)
   local col = math.floor((vim.o.columns - width) / 2)
 
-  -- 4. Open the floating window
+  -- 4. Open the floating window with a title
   scratchpad_winid = vim.api.nvim_open_win(scratchpad_bufnr, true, {
     relative = 'editor',
     width = width,
@@ -60,6 +79,8 @@ function M.toggle()
     col = col,
     style = 'minimal',
     border = 'rounded',
+    title = ' Scratchpad ',
+    title_pos = 'center',
   })
 end
 
